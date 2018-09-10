@@ -28,7 +28,8 @@ Recomenda-se que o servidor imprima mensagens na tela para demonstrar o funciona
 Observações:
 
     Não é necessário autenticação dos usuários.
-    Não é necessário criar um aplicativo cliente. Você pode usar o aplicativo netcat disponível para Linux e Windows.
+    Não é necessário criar um aplicativo cliente.
+    Você pode usar o aplicativo netcat disponível para Linux e Windows.
 
 Etapa 2
 
