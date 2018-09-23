@@ -9,20 +9,34 @@
 #include <sys/types.h>
 #include <time.h>
 
-void trat_leitura(char* msg)
+
+typedef struct pedido{
+    char comando[16];
+    char texto[1008];
+}pedido;
+
+pedido trat_leitura(char* msg)
 {
+    pedido pedido1;
     char arg1[16], arg2[1008];
     int ultimo = strlen(msg);
+    char * temp;
     msg[ultimo-1] = (char)NULL;
+    printf("trat1 \n");
+    strcpy(pedido1.comando, strtok(msg, " "));
+    printf("%s\n",pedido1.comando );
+    printf("trat2 \n");
+    if( strtok(NULL, " ") != NULL)
+        strcpy(pedido1.texto, strtok(NULL, " "));
+    
 
+    return pedido1;
 }
+
 
 int main(int argc, char * argv[])
 {
-    /*typedef struct comando{
-        char[16] comando;
-        char[1008] texto ;
-    }comando;*/
+    pedido pedido1;
 
     int listenfd=0, connfd=0;
     struct sockaddr_in serv_addr;// é um estrutura do sockaddr
@@ -30,9 +44,8 @@ int main(int argc, char * argv[])
     socklen_t sock_novo_len; 
     char sendBuff[1025];
     char resposta[512];
-    //time_t ticks; // time.h
     char msg[1025] ="2";
-    char comando[16];
+    //char comando[16];
     char a[10] = "a";
     int terminar;
 
@@ -71,16 +84,18 @@ int main(int argc, char * argv[])
             printf("Error de leitura do socket\n");
             exit(0);
         }
-        trat_leitura(msg);
+        pedido1 = trat_leitura(msg);
         printf("read ok, mensagem: %s \n", msg);
-        strcpy(comando,msg);
-        
-        if(strcmp("crdir", (char*)comando)==0)
+
+                
+
+        //resposta
+        if(strcmp("crdir", (char*)pedido1.comando)==0)
         {
             strcpy(resposta, "novo dir");
             system("mkdir oiii");
         }
-        else if(strcmp("rm", (char*)comando)==0)
+        else if(strcmp("rm", (char*)pedido1.comando)==0)
         {
             strcpy(resposta, "removido dir");
             system("rm -rf oiii");
@@ -88,7 +103,7 @@ int main(int argc, char * argv[])
         else
         {
             printf("erro do if da conversa msg = %s  \n",msg );
-            strcpy(resposta, "ERROR");
+            strcpy(resposta, "comando nao exite\n");
             testebug = 1;
         } 
 
