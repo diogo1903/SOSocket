@@ -1,5 +1,5 @@
-#ifndef bibcomando
-#define  bibcomando
+#ifndef interfacecliente
+#define  interfacecliente
 
 #include <stdio.h>
 #include <string.h>
@@ -11,12 +11,14 @@
 #include <curses.h>
 #include <string.h>
 
+#define tambuffer 74
+
 //estatico
 typedef struct comando1{
+  int idconexao;
   int funcao;
   int tamChar;
-  char nome[];
-  int idconexao;
+  char nome[50];
 }comando;
 
 // dinamico
