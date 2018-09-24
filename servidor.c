@@ -12,26 +12,60 @@
 
 typedef struct pedido{
     char comando[16];
-    char texto[1008];
+    char texto[64];
 }pedido;
 
-pedido trat_leitura(char* msg)
+pedido trat_leitura(char msg[80])
 {
     pedido pedido1;
-    char arg1[16], arg2[1008];
+    int i = 0, teste = 0, j=0;
     int ultimo = strlen(msg);
-    char * temp;
-    msg[ultimo-1] = (char)NULL;
+    msg[ultimo-1] = NULL;
     printf("trat1 \n");
-    strcpy(pedido1.comando, strtok(msg, " "));
-    printf("%s\n",pedido1.comando );
-    printf("trat2 \n");
-    if( strtok(NULL, " ") != NULL)
-        strcpy(pedido1.texto, strtok(NULL, " "));
+    while(msg[i]!= NULL)
+    {
+        if((int*)msg[i]!=32 & teste ==0 & msg[i] != NULL ){
+        pedido1.comando[i]= msg[i];
+        i++;
+        }else if(teste == 0){
+            teste =1;
+            i++;
+        }else if(msg[i]!= NULL & teste ==1 ){
+            pedido1.texto[j]= msg[i];
+            j++;
+            i++;
+        }else
+        {
+            printf("Erro no tratamento 1\n");
+        }         
+    }
     
-
+    //printf("comando:%s tamanho :%d\n", pedido1.comando, strlen(pedido1.comando));
+    //printf("comando:%s tamanho :%d\n", pedido1.texto, strlen(pedido1.texto));
     return pedido1;
 }
+
+
+void saida(char* saidaB;)
+{
+
+  FILE *pArq;
+  short int ch;
+  int i=0;
+  
+  pArq = popen("ls", "r");
+  while((ch = fgetc(pArq)) != EOF)
+  {
+    saidaB[i] = ch;
+    i++;
+    
+  }
+  printf("saida ok\n");
+  pclose(pArq);
+
+  
+}
+
 
 
 int main(int argc, char * argv[])
@@ -44,10 +78,12 @@ int main(int argc, char * argv[])
     socklen_t sock_novo_len; 
     char sendBuff[1025];
     char resposta[512];
-    char msg[1025] ="2";
+    char msg[80] ="2";
     //char comando[16];
     char a[10] = "a";
-    int terminar;
+    char saidaB[100000];
+    char comando[16];
+    char texto[64];
 
 // listenfd recebe o indentificador, descritor de soccket  socket(domain, type, protocol
     listenfd = socket(AF_INET, SOCK_STREAM,0);
@@ -60,7 +96,7 @@ int main(int argc, char * argv[])
 // atribuo valores para a estrutura socket serv_affr
     serv_addr.sin_family = AF_INET; // tipo de conexao 
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);// nao sei 
-    serv_addr.sin_port = htons(5000); //porta do servidor 
+    serv_addr.sin_port = htons(5001); //porta do servidor 
 // bind(s, name, namelen);
     bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
     // escuta 10 clientes 
@@ -74,9 +110,10 @@ int main(int argc, char * argv[])
         connfd = accept(listenfd, (struct sockaddr*)&sock_cli, &sock_novo_len);
         printf("accept ok \n"); 
         // resposta boas vindas
-        strcpy(resposta,"ola\n martin eh bumdao\n");
+        strcpy(resposta,"ola\n bem vindo\n");
         snprintf(sendBuff, sizeof(sendBuff), "%s\n",(char*)&resposta );
         write(connfd, sendBuff,strlen(sendBuff)); 
+        
         
         //leitura 
         if(read(connfd, msg, sizeof(msg))<0)
@@ -86,39 +123,50 @@ int main(int argc, char * argv[])
         }
         pedido1 = trat_leitura(msg);
         printf("read ok, mensagem: %s \n", msg);
+        printf("comando:%s tamanho :%d\n", pedido1.comando, strlen(pedido1.comando));
+        printf("comando:%s tamanho :%d\n", pedido1.texto, strlen(pedido1.texto));
 
-                
+        strcpy(comando, pedido1.comando);
+        strcpy(texto, pedido1.texto);
+        
+        printf("comando:%s tamanho :%d\n", pedido1.comando, strlen(pedido1.comando));
+
 
         //resposta
-        if(strcmp("crdir", (char*)pedido1.comando)==0)
-        {
+        char temp[40];
+        if(strcmp("crdir", pedido1.comando)==0){
             strcpy(resposta, "novo dir");
-            system("mkdir oiii");
-        }
-        else if(strcmp("rm", (char*)pedido1.comando)==0)
-        {
-            strcpy(resposta, "removido dir");
-            system("rm -rf oiii");
-        }
-        else
-        {
+            strcpy(temp, "mkdir " );
+            strcat(temp, texto);
+            system(temp);
+        }else if(strcmp("rm", pedido1.comando)==0){
+             strcpy(resposta, "deletado dir");
+            strcpy(temp, "rm -r " );
+            strcat(temp, texto);
+            system(temp);
+        }else if(strcmp("sair", pedido1.comando)==0){
+            strcpy(resposta, "saindo");
+            close(connfd);
+        }else if(strcmp("listar", pedido1.comando)==0){
+            strcpy(resposta, "listando diretorio");
+            strcpy(temp, "ls " );
+            strcat(temp, texto);
+            system(temp);
+            saida(saidaB);
+            printf("%d",strlen(*saidaB));
+            strcpy(resposta , saidaB);
+        }else{
             printf("erro do if da conversa msg = %s  \n",msg );
             strcpy(resposta, "comando nao exite\n");
             testebug = 1;
         } 
 
-       
-        
         snprintf(sendBuff, sizeof(sendBuff), "%s\n",(char*)&resposta );
         write(connfd, sendBuff,strlen(sendBuff));
         close(connfd);
-        printf("terminar?\n");
-        scanf("%d", &terminar);
-        if(terminar ==1)
-            exit(0);
-        
-       
     }
+    
+
     
 }
 
@@ -211,4 +259,31 @@ if(strcmp(msg, "ls"))
 
 
 
+*/
+/*
+pedido trat_leitura(char* msg)
+{
+    pedido pedido1;
+    char* arg1;
+    char* arg2;
+    int ultimo = strlen(msg);
+    char * temp;
+    msg[ultimo-1] = (char)NULL;
+    printf("trat1 \n");
+    //strcpy(pedido1.comando, strtok(msg, " "));
+    arg1 = strtok(msg," ");
+    arg2 = strtok(NULL, " ");
+    strcpy(pedido1.comando, (char*)arg1);
+    strcpy(pedido1.texto, (char*)arg2);
+    
+    printf("%s\n",pedido1.comando );
+    printf("%s\n",pedido1.texto );
+
+    printf("trat2 \n");
+    //if( temp strtok(NULL, " ") != NULL)
+      //  strcpy(pedido1.texto, strtok(NULL, " "));
+    
+
+    return pedido1;
+}
 */
