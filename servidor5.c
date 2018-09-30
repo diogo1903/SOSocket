@@ -9,12 +9,13 @@
 #include <sys/types.h>
 #include <time.h>
 
-#define porta 5000
+#define porta 5001
 
 
 typedef struct pedido{
     char comando[16];
     char texto[64];
+    char texto2[64];
 }pedido;
 
 void saidals(char* resposta)
@@ -40,26 +41,28 @@ void saidals(char* resposta)
 void saidaler(char* resposta, pedido pedido1)
 {
     printf("\ndegub 0\n");
-    FILE *fp;
-    char path[1035];
-    char c;
-    char total[10000];
-    char temp2[8000];
-    printf("\n tamanaho de temp é %d", sizeof(strcat("cat ", pedido1.texto)));
-    strcpy(temp2, strcat("cat ", pedido1.texto));
-    printf("\ndegub 1\n");
-    fp = popen(temp2, "r");
-    if (fp == NULL)
-    {
-        printf("Failed to run command\n" );
-        exit(1);
-    }
+            FILE *fp;
+            char path[1035];
+            char c;
+            char total[10000];
+            char temp2[8000];
+            printf("\ndegub 1\n");
+            strcat(temp2, "cat ");
+            strcat(temp2, pedido1.texto);
+            //strcpy(temp2, "cat teste.txt");
+            printf("\ndegub 2\n");
+            fp = popen(temp2, "r");
+            if (fp == NULL)
+            {
+                printf("Failed to run command\n" );
+                exit(1);
+            }
 
-    while (fgets(path, sizeof(path)-1, fp) != NULL) {
-        strcat(total,path);
-    }
-    pclose(fp);
-    strcpy(resposta, total);
+                while (fgets(path, sizeof(path)-1, fp) != NULL) {
+                strcat(total,path);
+            }
+            pclose(fp);
+            strcpy(resposta, total);
 }
 
 
@@ -71,6 +74,8 @@ void limpar_pedido(pedido pedido1)
     pedido1.comando[i] = NULL;
     for(int j =0 ; j < 64 ; j++)
     pedido1.texto[j] = NULL;
+    for(int j =0 ; j < 64 ; j++)
+    pedido1.texto2[j] = NULL;
 }
 
 
@@ -89,6 +94,10 @@ pedido trat_leitura(char msg[80])
     }
       if(pch != NULL){
         strcpy(pedido1.texto, pch);
+        pch = strtok (NULL, " ");
+    }
+    if(pch != NULL){
+        strcpy(pedido1.texto2, pch);
         pch = strtok (NULL, " ");
     }
     
@@ -157,7 +166,7 @@ int main(int argc, char * argv[])
         printf("mensagem: %s \n", msg);
         printf("comando:%s tamanho :%d\n", pedido1.comando, strlen(pedido1.comando));
         printf("texto:%s tamanho :%d\n", pedido1.texto, strlen(pedido1.texto));
-    
+        printf("texto2:%s tamanho :%d\n", pedido1.texto2, strlen(pedido1.texto2));
         char temp[40];
         if(strcmp("crdir", pedido1.comando)==0){
             strcpy(resposta, "novo dir");
@@ -182,11 +191,16 @@ int main(int argc, char * argv[])
             system(temp);
         }else if(strcmp("escrever", pedido1.comando)==0){
             strcpy(resposta, "escrito");
-            strcpy(temp, "echo " );
+            strcpy(temp, "echo \"" );
             strcat(temp, pedido1.texto);
+            strcat(temp, "\" > ");
+            strcat(temp, pedido1.texto2);
             system(temp);
         }else if(strcmp("ler", pedido1.comando)==0){
-            saidaler(resposta,pedido1);
+            saidaler(resposta, pedido1);
+        }else if(strcmp("ler", pedido1.comando)==0){
+            saidaler(resposta, pedido1);
+        }    
         }else{
             strcpy(resposta, "comando nao exite\n");
         }
