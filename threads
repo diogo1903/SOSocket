@@ -1,0 +1,66 @@
+// Incluir no codigo do servidor
+
+// Variaveis Globais
+pthread_t threads[10];
+pthread_mutex_t lock;
+int livre[10] = {0,0,0,0,0,0,0,0,0,0};
+int usadas = 0;
+struct sockaddr_in sock_cli[10];
+
+typedef struct{
+  int conexao;
+  int pos;
+}passainfo
+
+// Inicia mutex
+if( pthread_mutex_init(&lock, NULL) != 0){
+  fprintf(stderr, "Erro ao criar mutex.\n");
+  exit(EXIT_FAILURE);
+ }
+
+// Finaliza mutex
+pthread_mutex_destroy(&lock);
+
+// Para aceitar a conexao e criar thread
+if(usadas >= 0 && usadas < 10){
+  int posthread = 0;
+  int status;
+  while(livre[posthread] != 0 && i < 10){ //OBS: pega posição thread vazia
+    i++;
+  }
+  if(i >= 10){
+    printf("Error ao criar thread, slot para thread não encontrado\n");
+    //
+    // funçao que ignora conexao
+  }
+  passainfo novo;
+  novo.pos = posthread;
+  int clienteSockfd;
+  if ((clienteSockfd = accept(listenfd, (struct sockaddr*)&sock_cli[i], &sock_novo_len)) < 0)
+       {
+     printf("Erro no Socket\n");
+     exit(1);
+  }
+  novo.conexao = clienteSockfd;
+  status = pthread_create(&threads[posthread], NULL, funcaoThread,(void)* novo);// ver func
+  if(status != 0){ //OBS: testa erro
+    printf ("Erro ao aguardar finalização do thread.\n");
+    exit(EXIT_FAILURE);
+  }
+}
+else{ // se nao consegue criar conexao
+  printf("Número maximo de conexoes estabelecido");
+  // função que ignora o pedido de conexao
+  // manda buffer avisando que nao foi possivel criar conexao
+
+
+void funcaoThread(void* arg){
+  passainfo novo = *(passainfo*) arg;    //Cast do ponteiro
+  //leitura do buffer-conexao
+  pthread_mutex_lock(&lock);  // Trava o mutex
+  // usa disco
+  pthread_mutex_unlock(&lock);  // Libera o mutex
+  // se precisar algo mais que nao use disco (Ex: msg)
+  livre[novo.pos] = 0;
+  pthread_exit(NULL); // Finaliza thread
+}
