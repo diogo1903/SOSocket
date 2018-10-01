@@ -68,12 +68,15 @@ void saidaler(char* resposta, pedido pedido1){
 
 void limpar_pedido(pedido pedido1){
   int i;
-  for(i = 0; i < 16; i++)
-  pedido1.comando[i] = NULL;
-  for(i = 0; i < 64 ; i++)
-  pedido1.texto[i] = NULL;
-  for(i = 0; i < 64 ; i++)
-  pedido1.texto2[i] = NULL;
+  for(i = 0; i < 16; i++){
+    pedido1.comando[i] = NULL;
+  }
+  for(i = 0; i < 64 ; i++){
+    pedido1.texto[i] = NULL;
+  }
+  for(i = 0; i < 64 ; i++){
+    pedido1.texto2[i] = NULL;
+  }
 }
 
 pedido trat_leitura(char msg[80]){
@@ -98,76 +101,9 @@ pedido trat_leitura(char msg[80]){
   return pedido1;
 }
 
-int main(int argc, char * argv[]){
-  pthread_t threads[10];
-  pthread_mutex_t lock;
-  int livre[10] = {0,0,0,0,0,0,0,0,0,0};
-  int usadas = 0;
-  int listenfd=0, connfd=0;
-  struct sockaddr_in serv_addr;// é um estrutura do sockaddr
-  struct sockaddr_in sock_cli[10]; // é o socket do cliente
-  char sendBuff[1025];
-  socklen_t sock_novo_len;
-  char resposta[1000000];
-  if( pthread_mutex_init(&lock, NULL) != 0){
-    fprintf(stderr, "Erro ao criar mutex.\n");
-    exit(EXIT_FAILURE);
-  }
-  // listenfd recebe o indentificador, descritor de soccket  socket(domain, type, protocol
-  listenfd = socket(AF_INET, SOCK_STREAM,0);
-  // memset prenche uma variavel por um valor
-  memset(&serv_addr, '0', sizeof(serv_addr));
-  // printf(" serv _aadrs: %s \n",&serv_addr);
-  memset(sendBuff, '0', sizeof(sendBuff));
-  //printf(" serv _aadrs: %s \n",&sendBuff);
-  // atribuo valores para a estrutura socket serv_affr
-  serv_addr.sin_family = AF_INET; // tipo de conexao
-  serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);// nao sei
-  serv_addr.sin_port = htons(porta); //porta do servidor
-  // bind(s, name, namelen);
-  bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
-  // escuta 10 clientes
-  listen(listenfd,10);
-  sock_novo_len = sizeof(sock_cli);
-  while(1){
-    if(usadas >= 0 && usadas < 10){
-      int posthread = 0;
-      int status;
-      while(livre[posthread] != 0 && posthread < 10){ // pega posição thread vazia
-        i++;
-      }
-      if(i >= 10){
-        printf("Error ao criar thread, slot para thread não encontrado\n");
-        // funçao que ignora conexao
-        // manda buffer avisando que nao foi possivel criar conexao
-      }
-      passainfo novo;
-      novo.pos = posthread;
-      int clienteSockfd;
-      if ((clienteSockfd = accept(listenfd, (struct sockaddr*)&sock_cli[i], &sock_novo_len)) < 0){
-        printf("Erro no Socket\n");
-        exit(1);
-      }
-      novo.conexao = clienteSockfd;
-      novo.usadas = &usadas;
-      novo.livre = &livre[posthread];
-      usadas++;
-      status = pthread_create(&threads[posthread], NULL, funcaoThread,(void)* novo);// ver func
-      if(status != 0){ //OBS: testa erro
-        printf ("Erro ao aguardar finalização do thread.\n");
-        exit(EXIT_FAILURE);
-      }
-    }
-    else{ // se nao consegue criar conexao
-      printf("Número maximo de conexoes estabelecido");
-      // função que ignora o pedido de conexao
-      // manda buffer avisando que nao foi possivel criar conexao
-    }
-  }
-}
-
 void funcaoThread(void* arg){
   passainfo novo = *(passainfo*) arg;    //Cast do ponteiro
+  char resposta[1000000];
   char msg[80];
   pedido pedido1;
   strcpy(resposta,"ola bem vindo\n");
@@ -231,4 +167,71 @@ void funcaoThread(void* arg){
   novo.livre[novo.pos] = 0;
   novo.usadas = novo.usadas - 1;
   pthread_exit(NULL); // Finaliza thread
+}
+
+int main(int argc, char * argv[]){
+  pthread_t threads[10];
+  pthread_mutex_t lock;
+  int livre[10] = {0,0,0,0,0,0,0,0,0,0};
+  int usadas = 0;
+  int listenfd=0, connfd=0;
+  struct sockaddr_in serv_addr;// é um estrutura do sockaddr
+  struct sockaddr_in sock_cli[10]; // é o socket do cliente
+  char sendBuff[1025];
+  socklen_t sock_novo_len;
+  if( pthread_mutex_init(&lock, NULL) != 0){
+    fprintf(stderr, "Erro ao criar mutex.\n");
+    exit(EXIT_FAILURE);
+  }
+  // listenfd recebe o indentificador, descritor de soccket  socket(domain, type, protocol
+  listenfd = socket(AF_INET, SOCK_STREAM,0);
+  // memset prenche uma variavel por um valor
+  memset(&serv_addr, '0', sizeof(serv_addr));
+  // printf(" serv _aadrs: %s \n",&serv_addr);
+  memset(sendBuff, '0', sizeof(sendBuff));
+  //printf(" serv _aadrs: %s \n",&sendBuff);
+  // atribuo valores para a estrutura socket serv_affr
+  serv_addr.sin_family = AF_INET; // tipo de conexao
+  serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);// nao sei
+  serv_addr.sin_port = htons(porta); //porta do servidor
+  // bind(s, name, namelen);
+  bind(listenfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+  // escuta 10 clientes
+  listen(listenfd,10);
+  sock_novo_len = sizeof(sock_cli);
+  while(1){
+    if(usadas >= 0 && usadas < 10){
+      int posthread = 0;
+      int status;
+      while(livre[posthread] != 0 && posthread < 10){ // pega posição thread vazia
+        posthread++;
+      }
+      if(posthread >= 10){
+        printf("Error ao criar thread, slot para thread não encontrado\n");
+        // funçao que ignora conexao
+        // manda buffer avisando que nao foi possivel criar conexao
+      }
+      passainfo novo;
+      novo.pos = posthread;
+      int clienteSockfd;
+      if ((clienteSockfd = accept(listenfd, (struct sockaddr*)&sock_cli[i], &sock_novo_len)) < 0){
+        printf("Erro no Socket\n");
+        exit(1);
+      }
+      novo.conexao = clienteSockfd;
+      novo.usadas = &usadas;
+      novo.livre = &livre[posthread];
+      usadas++;
+      status = pthread_create(&threads[posthread], NULL, funcaoThread,(void*) novo);// ver func
+      if(status != 0){ //OBS: testa erro
+        printf ("Erro ao aguardar finalização do thread.\n");
+        exit(EXIT_FAILURE);
+      }
+    }
+    else{ // se nao consegue criar conexao
+      printf("Número maximo de conexoes estabelecido");
+      // função que ignora o pedido de conexao
+      // manda buffer avisando que nao foi possivel criar conexao
+    }
+  }
 }
