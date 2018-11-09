@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TAMNOS 64
-#define LIMITEREFENCIADOS 10
+#define BLOCOS 64
+#define LIMITEREFENCIADOS 4
+
+int listalivre[BLOCOS];
+int listainodelivre[BLOCOS];
 
 int[TAMNOS];
 
