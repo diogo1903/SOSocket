@@ -12,10 +12,11 @@ typedef struct nos{
 }inode;
 
 /*
-listagem de 064 blocos =    8 bytes
-   64 blocos * 4 bytes =  256 bytes
-  25 inodes * 93 bytes = 2325 bytes
+listagem de 064 blocos =    8 bytes - bytes 0 a 7
+   64 blocos * 4 bytes =  256 bytes - bytes 2332 a 2588
+  25 inodes * 93 bytes = 2325 bytes - bytes 8 a 2331
                  total = 2589 bytes
+byte 0 a 7
 */
 
 int main(){
