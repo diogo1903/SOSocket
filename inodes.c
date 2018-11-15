@@ -2,37 +2,30 @@
 #include <stdlib.h>
 
 #define BLOCOS 64
-#define LIMITEREFENCIADOS 4
-
-int listalivre[BLOCOS];
-int listainodelivre[BLOCOS];
-
-int[TAMNOS];
 
 typedef struct nos{
-  char perm[3]; //quem pode acessar 0 - read, 1 - write e 2 - execução
-  int tipo; //tipo do arquivo
-  int id[2]; //identificador do dono e grupo
-  int tam; //tamanho do arquivo em bytes
-  int tamlista; //quantos blocos referenciados
-  int lista[LIMITEREFENCIADOS]; // listagem endereços de blocos referenciados
+  char tipo; //tipo do arquivo 0 - livre, 1 - diretorio, 2 - ".txt"
+  char tam; //tamanho do arquivo em bytes
   char nome[50]; //nome do arquivo
+  char tamlista; //quantos blocos referenciados
+  int lista[10]; // listagem endereços de blocos referenciados
 }inode;
 
-inode zera(inode* a){
-  a.perm[0] = 0;
-  a.perm[1] = 0;
-  a.perm[2] = 0;
-  a.tipo = 0;
-  a.id[0] = 0;
-  a.id[1] = 0;
-  a.tam = 0;
-  a.tamlista = 0;
-  int x;
-  for(x = 0, x < LIMITEREFENCIADOS; x++){
-    a.lista[x] = 0;
+/*
+listagem de 064 blocos =    8 bytes
+   64 blocos * 4 bytes =  256 bytes
+  25 inodes * 93 bytes = 2325 bytes
+                 total = 2589 bytes
+*/
+
+int main(){
+  FILE *fp = fopen("arquivo.bin","r+b");
+  if (!fp){
+    printf ("Erro na abertura do arquivo. Fim de programa.");
+    exit (1);
   }
-  for(x = 0, x < 50, x++){
-    a.nome[x] = NULL;
-  }
+  //Codigo aqui
+  
+  fclose(fp);
+  return 0;
 }
