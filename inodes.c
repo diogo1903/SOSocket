@@ -20,12 +20,12 @@ listagem de 064 blocos =    8 bytes - bytes 0 a 7
 #define tambuffer 1024
 
 typedef struct nos{
-  char tipo; //tipo do arquivo 0 - livre, 1 - diretorio, 2 - ".txt"
+  short tipo; //tipo do arquivo 0 - livre, 1 - diretorio, 2 - ".txt"
   short tam; //tamanho do arquivo em bytes
-  char tamlista; //quantos blocos referenciados
+  short tamlista; //quantos blocos referenciados
   short lista[9]; // listagem endereços de blocos referenciados
   short tamnome;
-  char nome[49]; //nome do arquivo
+  char nome[50]; //nome do arquivo
 }inode;
 
 typedef struct arq{
@@ -36,41 +36,7 @@ typedef struct arq{
 
 FILE *fp;
 arquivo principal;
-int fda;
 
-// pega buffer e transforma em arquivo
-void arrumaarquivo(char buffer[tambuffer]){
-  int x, y, z;
-  for(x = iniclista; x < inicinodes; x++){ // blocos livres
-    principal.livre[x] = buffer[x];
-  }
-  for(x = inicinodes; x < inicblocos; x += taminodes){  // lista inodes
-    for(y = 0; y < taminodes; y++){ // cada inode
-      z = x + y; // posição no buffer
-      if(y = 0){ // pega tipo
-        principal.i[y].tipo = buffer[z];
-      }
-      if(y = 1 ){ // pega tam
-        principal.i[y].tam = buffer[z];
-      }
-      if(y = 2){ // pega tamlista
-        principal.i[y].tamlista = buffer[z];
-      }
-      if(y > 2 && y < 12){ // pega lista
-        principal.i[y].lista[y - 3] = buffer[z];
-      }
-      if(y = 12){ // pega tamnome
-        principal.i[y].tamnome = buffer[z];
-      }
-      if(y > 12 && y <= taminodes){ //pega nome
-        principal.i[y].nome[y - 13] = buffer[z];
-      }
-    }
-  }
-  for(x = inicblocos; x <= tambuffer; x++){ // lista blocos
-    principal.blocos[x] = buffer[x];
-  }
-}
 
 int alocaespaco(char texto){
 
@@ -79,21 +45,24 @@ int alocaespaco(char texto){
 void printinode(inode a){
   int x;
   printf("Tipo: %c\n", a.tipo);
-  printf("Tamanho: %c Bytes\n",a.tam);
+  printf("Tamanho: %d Bytes\n",a.tam);
   printf("Tam Lista: %c \nLista: ", a.tamlista);
   for(x = 0; x < 9; x++){
-    printf("%c, ", a.lista[x]);
+    printf("%d, ", a.lista[x]);
   }
+  printf("%d\n", a.tamnome);
   printf("\n Nome: ");
   for(x = 0; x < 50; x++){
     printf("%c", a.nome[x]);
   }
+  printf("\n");
 }
 
 int main(){
 
   int x = sizeof(inode);
   int y = sizeof(arquivo);
+  printf("texto texto texto\n\n");
   printf("%d \n%d", x, y);
   return 0;
 }
