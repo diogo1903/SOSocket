@@ -3,19 +3,19 @@
 #include <string.h>
 
 /*
-listagem de 064 blocos =    8 bytes - bytes 0 a 7
-  10 inodes * 95 bytes =  950 bytes - bytes 8 a 957
-   64 blocos * 4 bytes =  256 bytes - bytes 958 a 884
-                 total = 1214 bytes
+listagem de 064 blocos =   8 bytes - bytes 0 a 7
+  10 inodes * 73 bytes = 730 bytes - bytes 8 a 737
+   64 blocos * 4 bytes = 256 bytes - bytes 738 a 994
+                 total = 994 bytes
 */
 
-#define taminodes 62
+#define taminodes 73
 #define nbytelistabits 8
 #define ninodes 10
 #define nblocos 64
 #define iniclista 0
 #define inicinodes 8
-#define inicblocos 958
+#define inicblocos 738
 #define tambuffer 1214
 
 typedef struct nos{
@@ -40,12 +40,10 @@ int fda;
 // pega buffer e transforma em arquivo
 void arrumaarquivo(char buffer[tambuffer]){
   int x, y, z;
-  // blocos livres
-  for(x = iniclista; x < inicinodes; x++){
+  for(x = iniclista; x < inicinodes; x++){ // blocos livres
     principal.livre[x] = buffer[x];
   }
-  // lista inodes 8          638               63
-  for(x = inicinodes; x < inicblocos; x += taminodes){
+  for(x = inicinodes; x < inicblocos; x += taminodes){  // lista inodes
     for(y = 0; y < taminodes; y++){ // cada inode
       z = x + y; // posição no buffer
       if(y = 0){ // pega tipo
@@ -68,8 +66,7 @@ void arrumaarquivo(char buffer[tambuffer]){
       }
     }
   }
-  // lista blocos
-  for(x = inicblocos; x <= tambuffer; x++){
+  for(x = inicblocos; x <= tambuffer; x++){ // lista blocos
     principal.blocos[x] = buffer[x];
   }
 }
