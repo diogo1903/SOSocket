@@ -3,9 +3,9 @@
 #include <string.h>
 
 /*
-listagem de 064 blocos =    8 bytes - bytes 0 a 7
-  10 inodes * 76 bytes =  760 bytes - bytes 8 a 767
-   64 blocos * 4 bytes =  256 bytes - bytes 768 a 994
+listagem de 064 blocos =   16 bytes - bytes 0 a 15
+  10 inodes * 76 bytes =  760 bytes - bytes 15 a 775
+   64 blocos * 4 bytes =  256 bytes - bytes 776 a 1023
                  total = 1024 bytes
 */
 
@@ -15,8 +15,8 @@ listagem de 064 blocos =    8 bytes - bytes 0 a 7
 #define ninodes 10
 #define nblocos 64
 #define iniclista 0
-#define inicinodes 8
-#define inicblocos 768
+#define inicinodes 16
+#define inicblocos 776
 #define tambuffer 1024
 
 typedef struct nos{
