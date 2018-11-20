@@ -3,20 +3,21 @@
 #include <string.h>
 
 /*
-listagem de 064 blocos =   8 bytes - bytes 0 a 7
-  10 inodes * 73 bytes = 730 bytes - bytes 8 a 737
-   64 blocos * 4 bytes = 256 bytes - bytes 738 a 994
-                 total = 994 bytes
+listagem de 064 blocos =    8 bytes - bytes 0 a 7
+  10 inodes * 76 bytes =  760 bytes - bytes 8 a 767
+   64 blocos * 4 bytes =  256 bytes - bytes 768 a 994
+                 total = 1024 bytes
 */
 
-#define taminodes 73
+#define taminodes 76
+#define tambloco 4
 #define nbytelistabits 8
 #define ninodes 10
 #define nblocos 64
 #define iniclista 0
 #define inicinodes 8
-#define inicblocos 738
-#define tambuffer 1214
+#define inicblocos 768
+#define tambuffer 1024
 
 typedef struct nos{
   char tipo; //tipo do arquivo 0 - livre, 1 - diretorio, 2 - ".txt"
@@ -30,7 +31,7 @@ typedef struct nos{
 typedef struct arq{
   char livre[nbytelistabits];
   inode i[ninodes];
-  char blocos[nblocos];
+  char blocos[nblocos*tambloco];
 }arquivo;
 
 FILE *fp;
@@ -70,3 +71,31 @@ void arrumaarquivo(char buffer[tambuffer]){
     principal.blocos[x] = buffer[x];
   }
 }
+
+int alocaespaco(char texto){
+
+}
+
+void printinode(inode a){
+  int x;
+  printf("Tipo: %c\n", a.tipo);
+  printf("Tamanho: %c Bytes\n",a.tam);
+  printf("Tam Lista: %c \nLista: ", a.tamlista);
+  for(x = 0; x < 9; x++){
+    printf("%c, ", a.lista[x]);
+  }
+  printf("\n Nome: ");
+  for(x = 0; x < 50; x++){
+    printf("%c", a.nome[x]);
+  }
+}
+
+int main(){
+
+  int x = sizeof(inode);
+  int y = sizeof(arquivo);
+  printf("%d \n%d", x, y);
+  return 0;
+}
+
+// int fseek (FILE *fp, long numbytes, int origem);
